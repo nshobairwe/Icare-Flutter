@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:icare/common/style.dart';
+import 'package:icare/service/provider.dart';
 
 class SmsSetting extends StatefulWidget {
   const SmsSetting({super.key});
@@ -248,8 +249,18 @@ class _SmsSettingState extends State<SmsSetting> {
               style: AppStyles.subtitleStyle(),
             ),
             value: _enableEnvayaSMS,
-            onChanged: (bool value) => _toggleSwitch('enableEnvayaSMS', value),
+            onChanged: (bool value) {
+              setState(() {
+                _toggleSwitch('enableEnvayaSMS', value);
+              });
+
+              if (value) {
+                // Call SMService.fetchSmsData() when the switch is turned on
+                SMService.fetchSmsData();
+              }
+            },
           ),
+
           Divider(color: Colors.grey[800]),
           // Server Settings Section
           Text(
