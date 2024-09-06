@@ -16,11 +16,11 @@ class _SmsSettingState extends State<SmsSetting> {
   bool _testMode = false;
   bool _networkFailover = false;
 
-  final TextEditingController _serverUrlController = TextEditingController(
-      text: 'http://192.168.100.102:85/openmrs/ws/rest/v1/icare/envayasms/handle-actions'
-  );
 
   String _selectedInterval = '30 sec'; // Default interval
+  String _serveUrl = 'http://192.168.137.51:8081/sms/receive';
+  String _phoneNumber = '255689798797';
+  String _password = '123';
 
   void _toggleSwitch(String switchName, bool value) {
     setState(() {
@@ -48,6 +48,8 @@ class _SmsSettingState extends State<SmsSetting> {
   }
 
   void _showServerUrlDialog() {
+    final TextEditingController _serverUrlController = TextEditingController(text: _serveUrl);
+
     showDialog(
       context: context,
       barrierColor: Colors.black.withOpacity(0.5),
@@ -68,13 +70,16 @@ class _SmsSettingState extends State<SmsSetting> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(); // Dismiss the dialog without saving
               },
               child: Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                setState(() {
+                  _serveUrl = _serverUrlController.text;
+                });
+                Navigator.of(context).pop(); // Dismiss the dialog after saving
               },
               child: Text('OK'),
             ),
@@ -84,9 +89,10 @@ class _SmsSettingState extends State<SmsSetting> {
     );
   }
 
+
   void _showPhoneNumberDialog() {
     final TextEditingController _phoneNumberController = TextEditingController(
-      text: '255717611117',
+      text: _phoneNumber,
     );
 
     showDialog(
@@ -117,6 +123,9 @@ class _SmsSettingState extends State<SmsSetting> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
+                setState(() {
+                  _phoneNumber = _phoneNumberController.text;
+                });
               },
               child: Text('OK'),
             ),
@@ -126,9 +135,16 @@ class _SmsSettingState extends State<SmsSetting> {
     );
   }
 
+  Widget _buildPasswordDisplay() {
+    return Text(
+      '*' * _password.length,
+      style: AppStyles.subtitleStyle(),
+    );
+  }
+
   void _showPasswordDialog() {
     final TextEditingController _passwordController = TextEditingController(
-      text: '********',
+      text: _password,
     );
 
     showDialog(
@@ -142,10 +158,12 @@ class _SmsSettingState extends State<SmsSetting> {
             children: [
               TextField(
                 controller: _passwordController,
+                obscureText: true,
+                enableSuggestions: false, // Disable suggestions for better privacy
+                autocorrect: false,
                 decoration: InputDecoration(
                   labelText: 'Password',
                 ),
-                obscureText: true,
               ),
             ],
           ),
@@ -159,6 +177,9 @@ class _SmsSettingState extends State<SmsSetting> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
+                setState(() {
+                  _password = _passwordController.text;
+                });
               },
               child: Text('OK'),
             ),
@@ -238,19 +259,21 @@ class _SmsSettingState extends State<SmsSetting> {
           ListTile(
             title: Text('Server URL', style: AppStyles.titleStyle()),
             subtitle: Text(
-              'http://192.168.100.102:85/openmrs/ws/rest/v1/icare/envayasms/handle-actions',
+              _serveUrl,
               style: AppStyles.subtitleStyle(),
             ),
             onTap: _showServerUrlDialog,
           ),
           ListTile(
             title: Text('Your phone number', style: AppStyles.titleStyle()),
-            subtitle: Text('255717611117', style: AppStyles.subtitleStyle()),
+            subtitle: Text(_phoneNumber,
+                style: AppStyles.subtitleStyle()
+            ),
             onTap: _showPhoneNumberDialog,
           ),
           ListTile(
             title: Text('Password', style: AppStyles.titleStyle()),
-            subtitle: Text('********', style: AppStyles.subtitleStyle()),
+            subtitle: _buildPasswordDisplay(),
             onTap: _showPasswordDialog,
           ),
           ListTile(

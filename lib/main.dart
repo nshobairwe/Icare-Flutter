@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:icare/settings/sms_setting.dart';
+import 'package:icare/screen/sms_view.dart';
+
 
 void main() {
   runApp(MyApp());
@@ -31,66 +31,4 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class LogViewScreen extends StatefulWidget {
-  @override
-  _LogViewScreenState createState() => _LogViewScreenState();
-}
 
-class _LogViewScreenState extends State<LogViewScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Set the system UI overlay style here
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.black, // Status bar background color
-      statusBarIconBrightness: Brightness.light, // Status bar icon color
-    ));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(45.0),
-        child: AppBar(
-          title: Text('EnvayaSMS:Log View'),
-        ),
-      ),
-      body: Column(
-        children: [
-          GestureDetector(
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) =>
-                  SmsSetting())
-                  );
-            },
-            child: Container(
-              color: Colors.grey[600],
-              child: Center(
-                child: Column(
-                    children: [
-                      Text(
-                        'EnvayaSMS disabled',
-                        style: TextStyle(
-                          fontSize: 15.0,
-                        ),
-                      ),
-
-                      Text(
-                        'New messages will not be forwarded to server',
-                        style: TextStyle(
-                          fontSize: 15.0,
-                        ),
-                      ),
-                    ],
-                  ),
-              ),
-            ),
-          ),
-
-        ],
-      ),
-    );
-  }
-}
