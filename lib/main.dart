@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:icare/screen/sms_view.dart';
 
+import 'screen/sms_setting.dart';
+
 
 void main() {
   runApp(MyApp());
@@ -26,7 +28,12 @@ class MyApp extends StatelessWidget {
           bodyMedium: TextStyle(color: Colors.white), // General text color
         ),
       ),
-      home: LogViewScreen(),
+      home: const LogViewScreen(
+        evayaEnabledTime: null,
+        checkingForSms: null,
+        evayaSmsStarted: null,
+        OutgoingSmsTime: null,
+      ),
     );
   }
 }

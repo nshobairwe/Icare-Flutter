@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:icare/common/style.dart';
+import 'package:icare/screen/sms_view.dart';
 import 'package:icare/service/provider.dart';
 
 class SmsSetting extends StatefulWidget {
@@ -12,22 +13,54 @@ class SmsSetting extends StatefulWidget {
 class _SmsSettingState extends State<SmsSetting> {
   bool _enableEnvayaSMS = false;
   bool _keepNewMessages = false;
-  bool _callNotifications = true;
+  bool _callNotifications = false;
   bool _forwardSentMessages = false;
   bool _testMode = false;
   bool _networkFailover = false;
 
+  DateTime? evayaSmsEnabledTime;
+  String evayaSmsStarted = "EvayaSms started";
+  String OutgoingSmsTime = "Checking for outgoing every 30 sec";
+  String checkingForSms = "Checking for messages";
 
-  String _selectedInterval = '30 sec'; // Default interval
+
+  String _selectedInterval = '30 sec';
   String _serveUrl = 'http://192.168.137.51:8081/sms/receive';
   String _phoneNumber = '255689798797';
   String _password = '123';
+
+  String statusMessage = '';
+
+  void _fetchAndSendSms() async {
+    await SMService.fetchSmsData((successMessage) {
+      setState(() {
+        statusMessage = successMessage;
+        print(statusMessage);
+      });
+    });
+  }
 
   void _toggleSwitch(String switchName, bool value) {
     setState(() {
       switch (switchName) {
         case 'enableEnvayaSMS':
           _enableEnvayaSMS = value;
+          if (_enableEnvayaSMS) {
+            _fetchAndSendSms();
+            evayaSmsEnabledTime = DateTime.now();
+            print(evayaSmsEnabledTime);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => LogViewScreen(
+                  evayaEnabledTime: evayaSmsEnabledTime!,
+                  evayaSmsStarted: evayaSmsStarted!,
+                  OutgoingSmsTime: OutgoingSmsTime,
+                  checkingForSms: checkingForSms,
+                    smsSent: statusMessage
+                ),
+              ),
+            );
+          }
           break;
         case 'keepNewMessages':
           _keepNewMessages = value;
@@ -242,6 +275,12 @@ class _SmsSettingState extends State<SmsSetting> {
         padding: EdgeInsets.all(10.0),
         children: [
           // Enable EnvayaSMS Section
+          // ElevatedButton(
+          //   onPressed: _fetchAndSendSms,
+          //   child: Text('Fetch and Send SMS'),
+          // ),
+          // SizedBox(height: 20),
+          // Text(statusMessage),
           SwitchListTile(
             title: Text('Enable EnvayaSMS', style: AppStyles.titleStyle()),
             subtitle: Text(
@@ -254,10 +293,19 @@ class _SmsSettingState extends State<SmsSetting> {
                 _toggleSwitch('enableEnvayaSMS', value);
               });
 
-              if (value) {
-                // Call SMService.fetchSmsData() when the switch is turned on
-                SMService.fetchSmsData();
-              }
+              // if (_enableEnvayaSMS == true) {
+              //
+              //   evayaSmsEnabledTime = DateTime.now();
+              //   print(evayaSmsEnabledTime);
+              //   Navigator.of(context).push(
+              //     MaterialPageRoute(builder: (context)
+              //     => LogViewScreen(
+              //       evayaEnabledTime: evayaSmsEnabledTime!,
+              //       evayaSmsStarted: evayaSmsStarted!,
+              //       OutgoingSmsTime: OutgoingSmsTime,
+              //       checkingForSms: checkingForSms,))
+              //   );
+              // }
             },
           ),
 

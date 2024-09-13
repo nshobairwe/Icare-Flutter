@@ -15,7 +15,11 @@ class SMService {
   }
 
   // Function to send SMS in the background using background_sms
-  static Future<void> sendBackgroundSMS(String phoneNumber, String messageContent) async {
+  static Future<void> sendBackgroundSMS(
+      String phoneNumber,
+      String messageContent,
+      Function(String) onSuccess, // Callback for success message
+      ) async {
     // Ensure SMS permission is granted
     if (await _requestSmsPermission()) {
       SmsStatus result = await BackgroundSms.sendMessage(
@@ -26,16 +30,19 @@ class SMService {
 
       if (result == SmsStatus.sent) {
         print("SMS sent successfully to $phoneNumber");
+        onSuccess("SMS Sent Successfully");
       } else {
         print("Failed to send SMS to $phoneNumber");
+        onSuccess("Failed to send SMS");
       }
     } else {
       print("SMS permission not granted");
+      onSuccess("SMS permission not granted");
     }
   }
 
   // Fetch data and send SMS for each message
-  static Future<SmsResponse> fetchSmsData() async {
+  static Future<void> fetchSmsData(Function(String) onSuccess) async {
     var url = Uri.parse('http://10.42.0.181:8081/sms/receive');
 
     // Sending the request as form data
@@ -56,6 +63,7 @@ class SMService {
       // Parse the JSON response
       var data = jsonDecode(response.body);
 
+
       // Iterate through the events and send SMS for each message
       for (var event in data['events']) {
         for (var message in event['messages']) {
@@ -63,12 +71,14 @@ class SMService {
           String messageContent = message['message'];
 
           // Call the sendBackgroundSMS function to send each message
-          await sendBackgroundSMS(phoneNumber, messageContent);
+          await sendBackgroundSMS(phoneNumber, messageContent, (successMessage) async {
+            // Handle success message
+            // Introduce a 30-second delay before starting SMS sending
+
+            onSuccess(successMessage);
+          });
         }
       }
-
-      // Return the parsed SmsResponse model
-      return SmsResponse.fromJson(data);
     } else {
       throw Exception('Failed to load SMS data: ${response.statusCode}');
     }
