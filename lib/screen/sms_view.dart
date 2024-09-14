@@ -1,6 +1,5 @@
 import 'dart:async'; // Import this to use Future.delayed
 import 'package:flutter/material.dart';
-
 import 'package:icare/screen/sms_setting.dart';
 
 class LogViewScreen extends StatefulWidget {
@@ -25,7 +24,8 @@ class LogViewScreen extends StatefulWidget {
 
 class _LogViewScreenState extends State<LogViewScreen> {
   // Track which texts should be visible
-  List<bool> _visibleTexts = [false, false, false, false, false];
+  List<bool> _visibleTexts = [false, false, false, false];
+  String sms = ''; // Declare 'sms' as a class-level variable
 
   @override
   void initState() {
@@ -58,12 +58,8 @@ class _LogViewScreenState extends State<LogViewScreen> {
         _visibleTexts[3] = true;
       });
     });
-    Future.delayed(Duration(seconds: 5), () {
-      setState(() {
-        _visibleTexts[4] = true;
-        print("smsSent is set to visible");
-      });
-    });
+
+
   }
 
   @override
@@ -75,55 +71,62 @@ class _LogViewScreenState extends State<LogViewScreen> {
           title: Text('EnvayaSMS: Log View'),
         ),
       ),
-      body: Column(
-        children: [
-          Column(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => SmsSetting()));
-                },
-                child: Container(
-                  color: Colors.grey[600],
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Text(
-                          'EnvayaSMS disabled',
-                          style: TextStyle(
-                            fontSize: 15.0,
-                          ),
+      body: Container(
+        child: Column(
+          children: [
+            Container(
+              child:  Column(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => SmsSetting()));
+                    },
+                    child: Container(
+                      color: Colors.grey[600],
+                      child: Center(
+                        child: Column(
+                          children: [
+                            Text(
+                              'EnvayaSMS disabled',
+                              style: TextStyle(
+                                fontSize: 15.0,
+                              ),
+                            ),
+                            Text(
+                              'New messages will not be forwarded to server',
+                              style: TextStyle(
+                                fontSize: 15.0,
+                              ),
+                            ),
+                          ],
                         ),
-                        Text(
-                          'New messages will not be forwarded to server',
-                          style: TextStyle(
-                            fontSize: 15.0,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                alignment: Alignment.topLeft,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    if (_visibleTexts[0]) Text('[${widget.evayaEnabledTime}]'),
+                    if (_visibleTexts[1]) Text('${widget.evayaSmsStarted}'),
+                    if (_visibleTexts[2]) Text('${widget.OutgoingSmsTime}'),
+                    if (_visibleTexts[3]) Text('${widget.checkingForSms}'),
+
+                  ],
                 ),
               ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                if (_visibleTexts[0]) Text('[${widget.evayaEnabledTime}]'),
-                if (_visibleTexts[1]) Text('${widget.evayaSmsStarted}'),
-                if (_visibleTexts[2]) Text('${widget.OutgoingSmsTime}'),
-                if (_visibleTexts[3]) Text('${widget.checkingForSms}'),
-                if(_visibleTexts[4]) Text('${widget.smsSent}')
-               ],
-            ),
-          ),
-        ],
-      ),
+            )
+          ]
+        )
+      )
     );
   }
 }

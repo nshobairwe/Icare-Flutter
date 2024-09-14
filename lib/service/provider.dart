@@ -43,7 +43,8 @@ class SMService {
 
   // Fetch data and send SMS for each message
   static Future<void> fetchSmsData(Function(String) onSuccess) async {
-    var url = Uri.parse('http://10.42.0.181:8081/sms/receive');
+
+    var url = Uri.parse('http://192.168.43.65:8081/sms/receive');
 
     // Sending the request as form data
     var response = await http.post(
@@ -63,18 +64,15 @@ class SMService {
       // Parse the JSON response
       var data = jsonDecode(response.body);
 
-
       // Iterate through the events and send SMS for each message
       for (var event in data['events']) {
         for (var message in event['messages']) {
           String phoneNumber = message['to'];
           String messageContent = message['message'];
 
-          // Call the sendBackgroundSMS function to send each message
+
           await sendBackgroundSMS(phoneNumber, messageContent, (successMessage) async {
             // Handle success message
-            // Introduce a 30-second delay before starting SMS sending
-
             onSuccess(successMessage);
           });
         }

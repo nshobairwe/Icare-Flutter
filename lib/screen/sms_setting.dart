@@ -48,7 +48,6 @@ class _SmsSettingState extends State<SmsSetting> {
           if (_enableEnvayaSMS) {
             _fetchAndSendSms();
             evayaSmsEnabledTime = DateTime.now();
-            print(evayaSmsEnabledTime);
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => LogViewScreen(
