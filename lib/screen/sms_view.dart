@@ -1,4 +1,4 @@
-import 'dart:async'; // Import this to use Future.delayed
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:icare/screen/sms_setting.dart';
 
@@ -8,6 +8,9 @@ class LogViewScreen extends StatefulWidget {
   final String? OutgoingSmsTime;
   final String? checkingForSms;
   final String? smsSent;
+  final String? runningNumber;
+  final String? smsForwadedToServer;
+
 
   const LogViewScreen({
     Key? key,
@@ -16,6 +19,7 @@ class LogViewScreen extends StatefulWidget {
     this.OutgoingSmsTime,
     this.checkingForSms,
     this.smsSent,
+    this.runningNumber, this.smsForwadedToServer,
   }) : super(key: key);
 
   @override
@@ -23,9 +27,10 @@ class LogViewScreen extends StatefulWidget {
 }
 
 class _LogViewScreenState extends State<LogViewScreen> {
-  // Track which texts should be visible
   List<bool> _visibleTexts = [false, false, false, false];
-  String sms = ''; // Declare 'sms' as a class-level variable
+  String evayaDisabled = 'EnvayaSMS disabled';
+  String smsNotForwadedToServer = 'New messages will not be forwarded to a server';
+  List<Timer> _timers = []; // List to hold all the timers
 
   @override
   void initState() {
@@ -33,37 +38,66 @@ class _LogViewScreenState extends State<LogViewScreen> {
     _showTextsWithDelay();
   }
 
+  @override
+  void dispose() {
+    // Cancel all timers when the widget is disposed
+    for (var timer in _timers) {
+      timer.cancel();
+    }
+    super.dispose();
+  }
+
   void _showTextsWithDelay() {
-    // Create a delay for each text to appear
-    Future.delayed(Duration(seconds: 1), () {
-      setState(() {
-        _visibleTexts[0] = true;
-      });
-    });
+    _timers.add(
+      Timer(Duration(seconds: 1), () {
+        if (mounted) {
+          setState(() {
+            _visibleTexts[0] = true;
+          });
+        }
+      }),
+    );
 
-    Future.delayed(Duration(seconds: 2), () {
-      setState(() {
-        _visibleTexts[1] = true;
-      });
-    });
+    _timers.add(
+      Timer(Duration(seconds: 2), () {
+        if (mounted) {
+          setState(() {
+            _visibleTexts[1] = true;
+          });
+        }
+      }),
+    );
 
-    Future.delayed(Duration(seconds: 3), () {
-      setState(() {
-        _visibleTexts[2] = true;
-      });
-    });
+    _timers.add(
+      Timer(Duration(seconds: 3), () {
+        if (mounted) {
+          setState(() {
+            _visibleTexts[2] = true;
+          });
+        }
+      }),
+    );
 
-    Future.delayed(Duration(seconds: 4), () {
-      setState(() {
-        _visibleTexts[3] = true;
-      });
-    });
-
-
+    _timers.add(
+      Timer(Duration(seconds: 4), () {
+        if (mounted) {
+          setState(() {
+            _visibleTexts[3] = true;
+          });
+        }
+      }),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    String displayedText = widget.runningNumber?.isNotEmpty == true
+        ? widget.runningNumber!
+        : evayaDisabled;
+    String displaySmsForwaded = widget.smsForwadedToServer?.isNotEmpty == true
+              ? widget.smsForwadedToServer!
+              : smsNotForwadedToServer;
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(45.0),
@@ -75,7 +109,7 @@ class _LogViewScreenState extends State<LogViewScreen> {
         child: Column(
           children: [
             Container(
-              child:  Column(
+              child: Column(
                 children: [
                   GestureDetector(
                     onTap: () {
@@ -84,19 +118,25 @@ class _LogViewScreenState extends State<LogViewScreen> {
                     },
                     child: Container(
                       color: Colors.grey[600],
+                      padding: EdgeInsets.all(16.0),
                       child: Center(
                         child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              'EnvayaSMS disabled',
+                              displayedText,
                               style: TextStyle(
-                                fontSize: 15.0,
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
                               ),
                             ),
+                            SizedBox(height: 8.0),
                             Text(
-                              'New messages will not be forwarded to server',
+                              displaySmsForwaded,
                               style: TextStyle(
-                                fontSize: 15.0,
+                                fontSize: 14.0,
+                                color: Colors.white70,
                               ),
                             ),
                           ],
@@ -124,9 +164,9 @@ class _LogViewScreenState extends State<LogViewScreen> {
                 ),
               ),
             )
-          ]
-        )
-      )
+          ],
+        ),
+      ),
     );
   }
 }

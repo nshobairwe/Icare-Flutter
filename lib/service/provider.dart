@@ -44,7 +44,7 @@ class SMService {
   // Fetch data and send SMS for each message
   static Future<void> fetchSmsData(Function(String) onSuccess) async {
 
-    var url = Uri.parse('http://192.168.43.65:8081/sms/receive');
+    var url = Uri.parse('http://192.168.1.147:8081/sms/receive');
 
     // Sending the request as form data
     var response = await http.post(

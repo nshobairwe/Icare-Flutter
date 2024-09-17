@@ -30,6 +30,8 @@ class _SmsSettingState extends State<SmsSetting> {
   String _password = '123';
 
   String statusMessage = '';
+  String runningPhone = 'Evaya running(255679898797)';
+  String smsForwadedToServer = 'New messages will be forwaded to server';
 
   void _fetchAndSendSms() async {
     await SMService.fetchSmsData((successMessage) {
@@ -55,7 +57,10 @@ class _SmsSettingState extends State<SmsSetting> {
                   evayaSmsStarted: evayaSmsStarted!,
                   OutgoingSmsTime: OutgoingSmsTime,
                   checkingForSms: checkingForSms,
-                    smsSent: statusMessage
+                    smsSent: statusMessage,
+                    runningNumber: runningPhone,
+                    smsForwadedToServer: smsForwadedToServer
+
                 ),
               ),
             );
