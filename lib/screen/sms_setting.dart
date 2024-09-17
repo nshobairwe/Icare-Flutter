@@ -3,6 +3,9 @@ import 'package:icare/common/style.dart';
 import 'package:icare/screen/sms_view.dart';
 import 'package:icare/service/provider.dart';
 
+
+String statusMessage = '';
+
 class SmsSetting extends StatefulWidget {
   const SmsSetting({super.key});
 
@@ -29,7 +32,7 @@ class _SmsSettingState extends State<SmsSetting> {
   String _phoneNumber = '255689798797';
   String _password = '123';
 
-  String statusMessage = '';
+
   String runningPhone = 'Evaya running(255679898797)';
   String smsForwadedToServer = 'New messages will be forwaded to server';
 
@@ -50,6 +53,8 @@ class _SmsSettingState extends State<SmsSetting> {
           if (_enableEnvayaSMS) {
             _fetchAndSendSms();
             evayaSmsEnabledTime = DateTime.now();
+            print(statusMessage);
+            print(evayaSmsEnabledTime);
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => LogViewScreen(

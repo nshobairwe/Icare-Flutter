@@ -29,7 +29,7 @@ class SMService {
       );
 
       if (result == SmsStatus.sent) {
-        print("SMS sent successfully to $phoneNumber");
+        // print("SMS sent successfully to $phoneNumber");
         onSuccess("SMS Sent Successfully");
       } else {
         print("Failed to send SMS to $phoneNumber");

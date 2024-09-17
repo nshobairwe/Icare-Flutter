@@ -11,7 +11,6 @@ class LogViewScreen extends StatefulWidget {
   final String? runningNumber;
   final String? smsForwadedToServer;
 
-
   const LogViewScreen({
     Key? key,
     this.evayaEnabledTime,
@@ -19,7 +18,8 @@ class LogViewScreen extends StatefulWidget {
     this.OutgoingSmsTime,
     this.checkingForSms,
     this.smsSent,
-    this.runningNumber, this.smsForwadedToServer,
+    this.runningNumber,
+    this.smsForwadedToServer,
   }) : super(key: key);
 
   @override
@@ -27,10 +27,10 @@ class LogViewScreen extends StatefulWidget {
 }
 
 class _LogViewScreenState extends State<LogViewScreen> {
-  List<bool> _visibleTexts = [false, false, false, false];
+  List<bool> _visibleTexts = [false, false, false, false, false];
   String evayaDisabled = 'EnvayaSMS disabled';
   String smsNotForwadedToServer = 'New messages will not be forwarded to a server';
-  List<Timer> _timers = []; // List to hold all the timers
+  List<Timer> _timers = [];
 
   @override
   void initState() {
@@ -40,7 +40,6 @@ class _LogViewScreenState extends State<LogViewScreen> {
 
   @override
   void dispose() {
-    // Cancel all timers when the widget is disposed
     for (var timer in _timers) {
       timer.cancel();
     }
@@ -48,45 +47,17 @@ class _LogViewScreenState extends State<LogViewScreen> {
   }
 
   void _showTextsWithDelay() {
-    _timers.add(
-      Timer(Duration(seconds: 1), () {
-        if (mounted) {
-          setState(() {
-            _visibleTexts[0] = true;
-          });
-        }
-      }),
-    );
-
-    _timers.add(
-      Timer(Duration(seconds: 2), () {
-        if (mounted) {
-          setState(() {
-            _visibleTexts[1] = true;
-          });
-        }
-      }),
-    );
-
-    _timers.add(
-      Timer(Duration(seconds: 3), () {
-        if (mounted) {
-          setState(() {
-            _visibleTexts[2] = true;
-          });
-        }
-      }),
-    );
-
-    _timers.add(
-      Timer(Duration(seconds: 4), () {
-        if (mounted) {
-          setState(() {
-            _visibleTexts[3] = true;
-          });
-        }
-      }),
-    );
+    for (int i = 0; i < _visibleTexts.length; i++) {
+      _timers.add(
+        Timer(Duration(seconds: i + 1), () {
+          if (mounted) {
+            setState(() {
+              _visibleTexts[i] = true;
+            });
+          }
+        }),
+      );
+    }
   }
 
   @override
@@ -95,8 +66,8 @@ class _LogViewScreenState extends State<LogViewScreen> {
         ? widget.runningNumber!
         : evayaDisabled;
     String displaySmsForwaded = widget.smsForwadedToServer?.isNotEmpty == true
-              ? widget.smsForwadedToServer!
-              : smsNotForwadedToServer;
+        ? widget.smsForwadedToServer!
+        : smsNotForwadedToServer;
 
     return Scaffold(
       appBar: PreferredSize(
@@ -108,43 +79,39 @@ class _LogViewScreenState extends State<LogViewScreen> {
       body: Container(
         child: Column(
           children: [
-            Container(
-              child: Column(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => SmsSetting()));
-                    },
-                    child: Container(
-                      color: Colors.grey[600],
-                      padding: EdgeInsets.all(16.0),
-                      child: Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              displayedText,
-                              style: TextStyle(
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            SizedBox(height: 8.0),
-                            Text(
-                              displaySmsForwaded,
-                              style: TextStyle(
-                                fontSize: 14.0,
-                                color: Colors.white70,
-                              ),
-                            ),
-                          ],
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SmsSetting()),
+                );
+              },
+              child: Container(
+                color: Colors.grey[600],
+                padding: EdgeInsets.all(16.0),
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        displayedText,
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
-                    ),
+                      SizedBox(height: 8.0),
+                      Text(
+                        displaySmsForwaded,
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
             Padding(
@@ -153,17 +120,16 @@ class _LogViewScreenState extends State<LogViewScreen> {
                 alignment: Alignment.topLeft,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    if (_visibleTexts[0]) Text('[${widget.evayaEnabledTime}]'),
-                    if (_visibleTexts[1]) Text('${widget.evayaSmsStarted}'),
-                    if (_visibleTexts[2]) Text('${widget.OutgoingSmsTime}'),
-                    if (_visibleTexts[3]) Text('${widget.checkingForSms}'),
-
+                    if (_visibleTexts[0]) Text('${widget.evayaEnabledTime ?? 'No Data'}'),
+                    if (_visibleTexts[1]) Text('${widget.evayaSmsStarted ?? 'No Data'}'),
+                    if (_visibleTexts[2]) Text('${widget.OutgoingSmsTime ?? 'No Data'}'),
+                    if (_visibleTexts[3]) Text('${widget.checkingForSms ?? 'No Data'}'),
+                    if (_visibleTexts[4]) Text('${widget.smsSent ?? 'No Data'}'),
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
