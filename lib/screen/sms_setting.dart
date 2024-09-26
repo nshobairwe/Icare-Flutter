@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:icare/common/style.dart';
 import 'package:icare/screen/sms_view.dart';
 import 'package:icare/service/provider.dart';
+import 'package:provider/provider.dart';
+
+import '../models/sms_model.dart';
 
 
-String statusMessage = '';
+
 
 class SmsSetting extends StatefulWidget {
   const SmsSetting({super.key});
@@ -36,11 +39,21 @@ class _SmsSettingState extends State<SmsSetting> {
   String runningPhone = 'Evaya running(255679898797)';
   String smsForwadedToServer = 'New messages will be forwaded to server';
 
+  late String statusMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    statusMessage = ''; // Initialize statusMessage to an empty string
+  }
+
   void _fetchAndSendSms() async {
+    final smsModel = Provider.of<SmsModel>(context, listen: false);
     await SMService.fetchSmsData((successMessage) {
       setState(() {
         statusMessage = successMessage;
-        print(statusMessage);
+        smsModel.smsSent = successMessage;
+        print(smsModel.smsSent );
       });
     });
   }
@@ -53,21 +66,24 @@ class _SmsSettingState extends State<SmsSetting> {
           if (_enableEnvayaSMS) {
             _fetchAndSendSms();
             evayaSmsEnabledTime = DateTime.now();
-            print(statusMessage);
-            print(evayaSmsEnabledTime);
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => LogViewScreen(
-                  evayaEnabledTime: evayaSmsEnabledTime!,
-                  evayaSmsStarted: evayaSmsStarted!,
-                  OutgoingSmsTime: OutgoingSmsTime,
-                  checkingForSms: checkingForSms,
-                    smsSent: statusMessage,
-                    runningNumber: runningPhone,
-                    smsForwadedToServer: smsForwadedToServer
 
-                ),
-              ),
+
+            // Access SmsModel from Provider (assuming it's provided in a higher widget)
+            final smsModel = Provider.of<SmsModel>(context, listen: false);
+            smsModel.smsSent = statusMessage;
+
+
+            // Push the LogViewScreen with data
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => LogViewScreen(
+                evayaEnabledTime: evayaSmsEnabledTime!,
+                evayaSmsStarted: evayaSmsStarted!,
+                OutgoingSmsTime: OutgoingSmsTime,
+                checkingForSms: checkingForSms,
+                smsSent: smsModel.smsSent, // Access smsSent from SmsModel
+                runningNumber: runningPhone,
+                smsForwadedToServer: smsForwadedToServer,
+              )),
             );
           }
           break;

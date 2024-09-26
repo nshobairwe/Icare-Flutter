@@ -39,7 +39,7 @@ dependencies:
   background_sms: ^0.0.4
   permission_handler: ^11.3.1
   sms_receiver: ^0.4.1
-
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:

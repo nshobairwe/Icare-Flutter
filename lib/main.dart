@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:icare/screen/sms_view.dart';
+import 'package:provider/provider.dart';
 
+import 'models/sms_model.dart';
 import 'screen/sms_setting.dart';
 
 
 void main() {
-  runApp(MyApp());
+  runApp(
+      ChangeNotifierProvider(
+        create: (context) => SmsModel(),
+        child: MyApp(),
+      )
+  );
 }
 
 class MyApp extends StatelessWidget {
